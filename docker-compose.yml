@@ -1,0 +1,33 @@
+version: '3.7'
+services:
+    mq:
+        image: rabbitmq:3-management
+        container_name: some-rabbit
+        hostname: my-rabbit
+        environment:
+            - 'RABBITMQ_DEFAULT_USER=user'
+            - 'RABBITMQ_DEFAULT_PASS=password'
+        ports:
+            - '672:5672'
+            - '15672:15672'
+    elastic:
+        image: elasticsearch:7.6.2
+        container_name: elasticsearch
+        environment:
+            - 'discovery.type=single-node'
+        ports:
+            - '9200:9200'
+            - '9300:9300'
+        depends_on:
+            - mq
+    sqlserver:
+        image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+        container_name: sql-server
+        environment:
+            - 'ACCEPT_EULA=Y'
+            - 'SA_PASSWORD=yourStrong(!)Password'
+            - 'MSSQL_PID=Express'
+        ports:
+            - '1433:1433'
+        depends_on:
+            - elastic
